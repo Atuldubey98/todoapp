@@ -1,0 +1,49 @@
+.inputTodo{
+	display: flex;
+	align-items: center;
+}
+
+.inputTodo select{
+	padding: 8px;
+}
+.inputTodo option{
+	margin: 10px;
+}
+
+.username{
+	font-size: 1.5rem;
+	color: white;
+	margin: 10px;
+}
+
+#formContent{
+	margin-bottom: 30px;
+	display: flex;
+	flex-direction: column;
+}
+
+form{
+	margin: auto;
+	padding: 3rem;
+	display: flex;
+	flex-direction: column;
+	width: 40%;
+}
+form input{
+	margin: 10px;
+}
+#formFooter{
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+}
+
+.message{
+	background-color: #3f51b5b8;
+	font-size: 1.5rem;
+	margin: auto;
+	padding: 10px;
+	width: 70%;
+	text-align: center;
+	color: white;
+}

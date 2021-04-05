@@ -4,15 +4,30 @@
   		<input name="Search" type="text" class="form-control" placeholder="Search Todo" aria-label="Recipient's username" aria-describedby="button-addon2">
   		<button onclick="search()" class="btn btn-secondary text-white" type="button">Search</button>
 	</div>
-    <a style="font-weight: bold;" class="navbar-brand text-white" href="#"><%=title %></a>
+    <a style="font-weight: bold;" class="navbar-brand text-white" href="/"><%=title %></a>
   	<a href="/logout"><button class="btn btn-secondary text-white m-3" type="button">Logout</button></a>
 
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-person-circle m-3" viewBox="0 0 16 16">
   		<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
   		<path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
 	</svg>
+  <a style="color: white; text-decoration: none; font-weight: bold; font-size: 1.25rem;" href="/chats">Chats</a>
   <% if (user != undefined || user != {} || user != "") { -%>
-    <div class="username"><%=user.name%></div>
+    <div style="font-size: 1.25rem; margin: 1rem; font-weight: bold; color: white;" class="username"><%=user.name%></div>
   <% }%>
+    <div class="input-group mb-1 p-3">
+      <div class="user__search">
+        <div class="user__searchInput">
+          <input name="Search" type="text" class="form-control" placeholder="Search user to chat" aria-label="Recipient's username" aria-describedby="button-addon2">
+           <button onclick="" class="btn btn-secondary text-white" type="button">Search</button>
+        </div>
+          <ul class="user__list">
+            <li>hjasfh</li>
+            <li>hjasfh</li>
+            <li>hjasfh</li>
+            <li>hjasfh</li>   
+          </ul>
+      </div>
+  </div>
   </div>
 </nav>

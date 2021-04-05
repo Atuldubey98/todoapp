@@ -1,0 +1,22 @@
+.user__search{
+	position: absolute;
+	top: 0;
+	z-index: 3;
+}
+.user__searchInput{
+	display: flex;
+}
+.user__list{
+	display: none;
+}
+
+.user__search ul{
+	list-style: none;
+	background-color: white;
+	box-shadow: 2px 2px grey;
+	font-size: 1.1rem;
+}
+.user__search ul li{
+	background-color: grey;
+	margin-bottom: 10px;
+}

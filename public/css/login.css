@@ -1,3 +1,7 @@
+svg{
+	cursor: pointer;
+}
+
 .inputTodo{
 	display: flex;
 	align-items: center;

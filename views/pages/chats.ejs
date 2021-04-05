@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<%-include('../partial/head.ejs');%>
+	<link rel="stylesheet" type="text/css" href="/css/chats.css">
+</head>
+<body>
+	<%-include('../partial/navbar.ejs');%>
+	<div class="chat">
+		<div class="chat__names">
+			<div class="recepients">Recepients</div>	
+			<ul id="<%=user.id%>" class="chat__items">
+				
+				<% for (var i = 0; i < chatnames.length; i++) { -%>
+					<li class="chat__item" id="<%=chatnames[i].id%>"><%=chatnames[i].name%></li>	
+				<% } -%>
+			</ul>
+		</div>
+		<div id="" class="chat__body">
+			<div class="chats">
+				
+			</div>
+			<form autocomplete="off" class="form" id="form__chat">
+				<input type="text" name="input">
+				<input value="SEND" type="submit" name="SEND">
+			</form>
+		</div>
+	</div>
+	<script src="/javascript/recipientController.js" type="text/javascript"></script>
+
+</body>
+</html>

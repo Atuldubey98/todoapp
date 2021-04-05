@@ -8,8 +8,37 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const flash = require('connect-flash');
 const session = require("express-session");
+
+
 //app initialize
 const app = express();
+
+
+// Socket
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+io.on('connection', (Socket) => {
+	console.log("Received Connection");
+	Socket.on('message', msg => {
+		const chat = {
+			message: msg.message,
+			from : msg.from,
+			to : msg.to,
+			chatid: msg.chatid,
+		}
+		var sql = `INSERT INTO MESSAGES (message, from_id, to_id, chat_id) values ?`;
+		var values = [
+			[msg.message, msg.from, msg.to, msg.chatid]
+		];
+		con.query(sql,[values], (err, result)=>{
+			if (err) {
+				throw err;
+			}else{
+				io.emit("getMessage",msg);
+			}
+		})
+  });
+});
 
 // Sql
 var con = mysql.createConnection({
@@ -23,7 +52,10 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
+
 //middleware
+
+
 // Public Parser
 app.use(session({
   secret: key,
@@ -36,11 +68,16 @@ app.use(bodyParser.urlencoded({
 	extended:false
 }))
 app.use(bodyParser.json())
+
+
 // View Engine
 app.set('view engine', 'ejs');
 app.use(cors());
+
+
 // requests
 
+//Index page
 app.get("/", (req, res)=>{
 	if (req.session.user) {
 	var sql = 'SELECT * FROM TODO WHERE USERID = ' + req.session.user.id;
@@ -56,6 +93,8 @@ app.get("/", (req, res)=>{
 		return res.redirect("/login");
 	}
 })
+
+//Search a todo
 app.get("/search/:search", (req, res)=>{
 	var sql = "SELECT * FROM TODO WHERE ITEM LIKE '%" + req.params.search + "%'"
 	con.query(sql, (err, result)=>{
@@ -69,19 +108,20 @@ app.get("/search/:search", (req, res)=>{
 	});
 })
 
-
+//Post a todo;
 
 app.post("/",(req, res)=>{
 	const item = req.body.item;
+	
+	if (!req.session.user) {
+		req.flash("loginMessage", "Session Expired Login again");
+		return res.redirect("/login");
+	}
 	const user = req.session.user.id;
 	var sql = 'INSERT INTO TODO(ITEM, USERID) values ?';
 	const values = [
 		[item, user]
 	];
-	if (!user) {
-		req.flash("loginMessage", "Session Expired Login again");
-		return res.redirect("/login");
-	}
 	con.query(sql, [values], (err, result)=>{
 		if (err) {
 			throw err;
@@ -94,6 +134,7 @@ app.post("/",(req, res)=>{
 	})
 })
 
+// delete a todo;
 app.get("/delete/:id", (req, res)=>{
 	const id = req.params.id;
 	var sql = 'DELETE FROM TODO WHERE ID=' + id;
@@ -108,6 +149,8 @@ app.get("/delete/:id", (req, res)=>{
 		});
 	})
 })
+
+
 // Login POST
 app.post("/login", (req, res)=>{
 	var sql = "SELECT * FROM USERS WHERE EMAIL=?";
@@ -147,6 +190,7 @@ app.get("/logout" , (req, res)=>{
 	return res.redirect("/login");
 })
 
+// regsiter user
 app.post("/register", (req, res)=>{
 	const user=req.body;
 	if (typeof user.name == undefined || typeof user.email == undefined || typeof user.password == undefined|| user.name.length < 3 || user.email.length < 3 || user.password.length < 3) {
@@ -170,6 +214,7 @@ app.post("/register", (req, res)=>{
 						if (err) {
 							throw err;
 						}
+						req.flash("loginMessage", "User Created Register to Login");
 						return res.redirect("/login");
 					})
 				}
@@ -177,4 +222,44 @@ app.post("/register", (req, res)=>{
 		})
 	}
 })
-app.listen(port, "0.0.0.0");
+
+// CHATS get
+
+app.get("/chats", (req, res)=>{
+	
+	if (req.session.user) {
+		var sql = `select name , id from users where id in (select contactid from contacts where userid = ` + req.session.user.id + `)`;
+		con.query(sql, (err, contacts)=>{
+			if (err) {
+				throw err;
+			}
+			return res.render('pages/chats', {chatnames : contacts, user: req.session.user, title: "TODO"})
+		})
+	}else{
+		req.flash("loginMessage", "Login again session expired")
+		return res.redirect('login');
+	}
+})
+
+// chat get by User
+
+app.get("/chats/:id", (req, res)=>{
+	if (req.session.user && typeof req.params.id != undefined && req.params.id != "") {	
+		var sql = "SELECT * FROM MESSAGES WHERE chat_id = " + req.params.id;
+		con.query(sql, (err, chats)=>{
+			if (err) {
+				throw err;
+			}
+			console.log(chats);
+			return res.status(200).json({
+				chats: chats
+			});
+		})
+	}
+	else {
+		req.flash("loginMessage", "Login again session expired")
+		return res.redirect('/login');	
+	}
+})
+//Listen to server
+server.listen(port, "0.0.0.0");

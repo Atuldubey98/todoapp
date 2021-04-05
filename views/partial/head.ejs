@@ -1,13 +1,36 @@
-<title><%=title %></title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<title>
+	<%=title %>
+</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+	integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
-<style type="text/css">
-	.dropdown .dropdown-menu: hover{
-		display: inline;
-	}
-</style>
-
-<link href="/css/login.css" rel="stylesheet" type="text/css" >
+<link href="/css/nav.css" rel="stylesheet" type="text/css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+	var socket = io();
+	socket.on("getMessage",(msg)=>{
+		if (msg.chatid == getChatId(document.getElementsByClassName("chat__items")[0].id ,document.getElementsByClassName("chat__body")[0].id))
+			{
+			var divchat = document.createElement("div");
+			divchat.classList.add("chat__message");
+			if (msg.from == document.getElementsByClassName("chat__body")[0].id) {
+				divchat.classList.add("align__right");
+			}else{
+				divchat.classList.add("align__left")
+			}
+			var textNode = document.createTextNode(msg.message);
+			divchat.appendChild(textNode);
+			chats.appendChild(divchat);
+			chats.scrollTop = chats.scrollHeight;
+			}	 
+	})
+
+
+function getChatId(chatid1, chatid2)
+{
+	return chatid2 < chatid1 ? chatid2.toString() + chatid1.toString() : chatid1.toString() + chatid2.toString();
+}
+</script>

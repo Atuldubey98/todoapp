@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<%-include('../partial/head.ejs');%>
+		<style type="text/css">
+		
+			.itemUser {
+				display: flex;
+				justify-content: space-between;
+				background-color: #302d589e;
+				padding: 20px;
+				color: white;
+				margin: 30px;
+				word-wrap: break-word;
+			}
+		</style>
+</head>
+
+<body>
+	<%-include('../partial/navbar.ejs');%>
+			<div class="body">
+				<% if (users.length > 0) { -%>
+					<% for (var i = 0; i < users.length; i++) { -%>
+								<div id="<%=users[i].id%>" class="itemUser">
+									<%=users[i].name%>
+								</div>
+									<% } -%>				
+				<% } else { -%>
+					<img src="https://image.shutterstock.com/image-vector/vector-no-people-crowd-flat-600w-1702042912.jpg">
+				<% } -%>
+			</div>
+	<script src="/javascript/createChatIDController.js" type="text/javascript"></script>
+
+</body>
+
+</html>

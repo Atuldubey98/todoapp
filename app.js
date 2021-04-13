@@ -45,7 +45,7 @@ var con = mysql.createConnection({
   host: "localhost",
   user: "root",
   database: "todo",
-  password: "Ramatul98#"
+  password: key
 });
 con.connect(function(err) {
   if (err) throw err;
@@ -80,14 +80,15 @@ app.use(cors());
 //Index page
 app.get("/", (req, res)=>{
 	if (req.session.user) {
-	var sql = 'SELECT * FROM TODO WHERE USERID = ' + req.session.user.id;
-
-	con.query(sql, (err, result)=>{
-		if (err) {
-			console.log(err);
-		}
-			return res.render('pages/index', {title: "TODO", todos : result , user : req.session.user});
-		});
+		var sql = 'SELECT * FROM TODO WHERE USERID = ' + req.session.user.id;
+		console.log(req.session.user.id);
+		con.query(sql, (err, result)=>{
+			if (err) {
+				console.log(err);
+			}
+				return res.render('pages/index', {title:"TODO",
+													 todos : result , user : req.session.user});
+			});
 	}else{
 		req.flash("loginMessage", "Session Expired Login again")
 		return res.redirect("/login");
@@ -261,5 +262,54 @@ app.get("/chats/:id", (req, res)=>{
 		return res.redirect('/login');	
 	}
 })
+
+app.get("/users/:search", (req,res)=>{
+	
+	var sql = "SELECT name, email, id FROM USERS WHERE name or email LIKE '%" + req.params.search + "%'" + "limit 10";
+	con.query(sql, (err, users)=>{
+		if (err) {throw err;}
+		if (req.session.user) {
+			return res.
+			render('pages/users', {users: users.filter(user=> user.id != req.session.user.id), title : "USERS", user: req.session.user});
+		}else{
+			return res.redirect('/login')
+		}
+	})
+	
+})
+
+app.get('/createchat/:contactid', (req, res)=>{
+	if (req.session.user) {
+		const sql = `SELECT * FROM CONTACTS WHERE CONTACTID = ? and USERID = ?`
+		con.
+		query(sql,[req.session.user.id, req.params.contactid],
+		 (err, result)=>{
+		
+			if (result.length > 0) {
+				return res.
+				status(200).
+				json({status: "notok", result : result});
+			}else{
+				const inContacts = `insert into contacts (contactid, userid) values ?`;
+				const values = [
+					[req.params.contactid, req.session.user.id],
+					[req.session.user.id, req.params.contactid]
+				];
+				con.query(inContacts,[values], (err, resu)=>{
+					if (err) {
+						throw err;
+					}
+					return res.
+					status(200).
+					json({status : "ok", result: resu});
+				})
+			}
+		})
+	}else{
+		res.redirect('login');
+	}
+})
+
+
 //Listen to server
 server.listen(port, "0.0.0.0");
